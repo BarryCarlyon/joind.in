@@ -1,79 +1,38 @@
-<?php
-    header("Content-type: text/javascript; charset=utf8");
-    header("Cache-control: public, max-age=10000");
-    header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
-    define('BASEPATH', 'something');
-    $config_filename = dirname(__FILE__).'/../system/application/config/config.php';
-    if (is_readable($config_filename)) {
-        require($config_filename);
-        $siteBase = $config['base_url'];
-        $apiBase  = $config['api_base_url'];
-    } else {
-        $siteBase = '//joind.in';
-        $apiBase  = '//api.joind.in';
-    }
-?>
-var joindin_attending = function(){};
+<a href="" id="woo">eeeeee</a>
 
-joindin_attending.urlBase_api     = "<?php echo $apiBase; ?>";
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    jQuery('#woo').click(function(e) {
+        e.preventDefault();
+//        markAttending(this, 1, false);
+        markAttendingB(this, 1);
+    });
+});
 
-joindin_attending.embedStyle      = true;
-
-// data collectors
-joindin_attending.eventId     = null;
-joindin_attending.attending   = false;
-
-joindin_attending.draw = function(eventId, node) {
-    if (!node) {
-        var rndm = parseInt(Math.random() * 9999999);
-        document.write('<div id="joindin-content-placeholder-' + rndm + '"></div>');
-        node = document.getElementById("joindin-content-placeholder-" + rndm);
-    } else if (typeof node == "string") {
-        node = document.getElementById(node);
-    }
-    if (typeof jQuery == 'undefined') {
-        // TODO: Attempt to auto-load jQuery, then relaunch the widget when jQuery is available
-        if (typeof console.log != "undefined") {
-            console.log("No jQuery available - not proceeding with joind.in widget");
-            return;
-        }
-    }
-    joindin_attending.eventId = eventId;
-
-    // finished init
-
-    joindin_attending.renderWidget(node);
-
-    return;
-    // grab some data
+function markAttendingB(el, eid) {
+    console.log('b ' + eid);
+    window.open('/event/widget/pending/', 'joind_api_login', 'height=200,width=400,location=1');
     jQuery.ajax({
-        url: joindin_speaker.urlBase_api + 'v2.1/users/' + userId + '/talks?format=json',
+        type: 'POST',
+        url: 'http://api.joind.local/v2.1/events/' + eid + '/attending/',
+        contentType: 'application/json',
+
         dataType: 'jsonp',
-        success: function(json){
-            joindin_attending.gotData(json, node, eventId);
+        crossDomain: true,
+
+        success: function(rdata) {
+            console.log(rdata);
+//            window.close('joind_api_login');
+        }, error: function (xhr) {
+//            window.close('joind_api_login');
+//            console.log(xhr);
+//            console.log(xhr.responseText);
+            // pop a dialog to login
+            window.open('/event/widget/login/', 'joind_api_login', 'height=200,width=400');
         }
     });
 }
 
-joindin_attending.gotData = function(json, node, $eventId) {
-
-}
-joindin_attending.renderWidget = function(node) {
-    var content = "";
-
-    content += "<div class='joindin-content-insert'>";
-
-    content += '<div class="joindin-content-insert-past">';
-    content += '<a href="" class="joindin-content-insert-attend">woo</a>';
-    content += '</div>';
-
-    jQuery(node).append(content);
-}
-<?php
-exit;
-
-//.
-?>
 function apiRequest(rtype,raction,data,callback){
     var xml_str='';
     $.each(data,function(k,v){
@@ -154,3 +113,4 @@ function markAttending(el,eid,isPast){
 
     return false;
 }
+</script>

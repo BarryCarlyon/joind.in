@@ -720,6 +720,79 @@ class Event extends Controller
         $this->add($id);
     }
 
+/**
+barry
+*/
+    function widget($id) {
+        $this->load->helper('form');
+        $this->load->helper('reqkey');
+        $this->load->helper('events');
+        $this->load->helper('tabs');
+        $this->load->library('validation');
+        $this->load->library('defensio');
+        $this->load->library('spam');
+        $this->load->library('timezone');
+//        $this->load->library('gravatar');
+//        $this->load->plugin('captcha');
+        $this->load->model('event_model');
+//        $this->load->model('event_comments_model');
+        $this->load->model('user_attend_model', 'uam');
+//        $this->load->model('talk_track_model', 'ttm');
+//        $this->load->model('event_track_model', 'etm');
+//        $this->load->model('talk_comments_model', 'tcm');
+//        $this->load->model('user_admin_model', 'uadm');
+//        $this->load->model('tags_events_model', 'eventTags');
+//        $this->load->model('talks_model');
+//        $this->load->model('Pending_talk_claims_model', 'pendingTalkClaims');
+
+        // validate user input (id)
+        if (!ctype_digit((string)$id)) {
+            show_error('An invalid event id was provided');
+        }
+
+        $events     = $this->event_model->getEventDetail($id);
+        $evt_admins = $this->event_model->getEventAdmins($id);
+
+        if ($is_auth) {
+            $uid        = $this->session->userdata('ID');
+            $chk_attend = ($this->uam->chkAttend($uid, $id)) ? true : false;
+        } else {
+            $chk_attend = false;
+        }
+
+//        if ($events[0]->private == 'Y') {
+//        }
+
+//        $attend        = $this->uam->getAttendUsers($id);
+
+        $my_id = $this->session->userdata('ID');
+//        $logged_in_is_attending = isset($atten)
+//        print_r($attend);exit;
+
+        $arr = array(
+            'event_detail'         => $events[0],
+            'admin'                => ($this->user_model->isAdminEvent($id))
+                ? true : false,
+            'user_id'              => ($is_auth)
+                ? $this->session->userdata('ID') : '0',
+            'attend'               => $chk_attend,
+//            'attend_ct'            => count($attend),
+            'reqkey'               => $reqkey,
+            'seckey'               => buildSecFile($reqkey),
+//            'attending'            => $attend,
+        );
+
+//        $this->load->view('template_widget');
+
+//        $this->template->load('template_widget', 'content');
+
+        $this->template->set_template('widget');
+
+        $this->template->write_view('content', 'event/widget', $arr, true);
+
+        $this->template->render();
+    }
+
     /**
      * Displays a detailed overview of a specific event.
      *

@@ -20,10 +20,10 @@ if ($event_detail->event_cfp_start>=time()) {
 <script src="/inc/leaflet/leaflet.js"></script>
 
 <div class="detail">
-    
+
     <div class="header">
         <?php $this->load->view('event/_event-icon', array('event'=>$event_detail)); ?>
-    
+
         <div class="title">
             <div class="head">
                 <input type="hidden" name="eid" id="eid" value="<?php echo $event_detail->ID; ?>"/>
@@ -34,7 +34,7 @@ if ($event_detail->event_cfp_start>=time()) {
                     <?php if ($event_detail->event_start+86399 != $event_detail->event_end) { ?>
                         - <strong><?php echo $this->timezone->formattedEventDatetimeFromUnixtime($event_detail->event_end, $event_detail->event_tz_cont.'/'.$event_detail->event_tz_place, 'd.M.Y'); ?></strong>
                     <?php } ?>
-                    <br/> 
+                    <br/>
                     <strong><?php echo escape($event_detail->event_loc); ?></strong>
                     <?php if ($event_detail->private==1): ?>
                         <br/><strong>Private Event</strong>
@@ -42,25 +42,26 @@ if ($event_detail->event_cfp_start>=time()) {
                 </p>
                 </div>
                 <p class="opts">
-                <?php 
+                <?php
                 /*
                 if its set, but the event was in the past, just show the text "I was there!"
                 if its set, but the event is in the future, show a link for "I'll be there!"
                 if its not set show the "I'll be there/I was there" based on time
                 */
+                print_r($attend);exit;
                 if ($attend && user_is_auth()) {
                     if ($event_detail->event_end<time()) {
                         $link_txt="I attended"; $showt=1;
                     } else { $link_txt="I'm attending"; $showt=2; }
                 } else {
                     if ($event_detail->event_end<time()) {
-                        $link_txt="I attended"; $showt=3; 
+                        $link_txt="I attended"; $showt=3;
                     } else { $link_txt="I'm attending"; $showt=4; }
                 }
                 //if they're not logged in, show the questions
                 if (!user_is_auth()) { $attend=false; }
                 ?>
-                    
+
                     <a class="btn<?php echo $attend ? ' btn-success' : ''; ?>" id="mark-attending" href="javascript:void(0);" onclick="return markAttending(this,<?php echo $event_detail->ID?>,<?php echo $event_detail->event_end<time() ? 'true' : 'false'; ?>);"><?php echo $link_txt?></a>
                     <span class="attending"><strong><span class="event-attend-count-<?php echo $event_detail->ID; ?>"><?php echo (int)$attend_ct; ?></span> <?php echo $attend_ct === 1 ? 'person' : 'people' ?></strong> <?php echo (time()<=$event_detail->event_end) ? ' attending so far':' said they attended'; ?>. <a href="javascript:void(0);" id="toggle-attendees" class="show">Show &raquo;</a></span>
                 </p>
@@ -74,7 +75,7 @@ if ($event_detail->event_cfp_start>=time()) {
     <div class="desc">
         <?php echo auto_p(auto_link(escape($event_detail->event_desc))); ?>
         <hr/>
-        
+
         <div class="desc-normal">
     <b>Your host(s):</b><br/>
     <table cellpadding="5" cellspacing="0" border="0">
@@ -95,7 +96,7 @@ if ($event_detail->event_cfp_start>=time()) {
             <div class="links">
                 <h2 class="h4">Event Link<?php if (count($hrefs) != 1): ?>s<?php endif; ?></h2>
                 <ul>
-                <?php 
+                <?php
                 $linkListItem = '<li><a href="%1$s" title="%1$s" rel="external">%1$s</a></li>';
                 foreach ($hrefs as $href) {
                     printf($linkListItem, escape($href));
@@ -127,13 +128,13 @@ if ($event_detail->event_cfp_start>=time()) {
         <?php } ?>
         </div>
     <?php } ?>
-            <?php 
+            <?php
             // If there's a Call for Papers open for the event, let them know
             if (!empty($event_detail->event_cfp_start) || !empty($event_detail->event_cfp_end)) {
             ?>
             <div class="links">
                 <b>Call for Papers Status:
-                <?php 
+                <?php
             switch ($cfp_status) {
                 case "open" :
                     echo '<span style="color:#00BE02">Open!</span>';
@@ -151,7 +152,7 @@ if ($event_detail->event_cfp_start>=time()) {
                     echo '<span style="color:#BE0002">Closed</span>';
                     break;
             }
-                ?> </b> 
+                ?> </b>
             </div>
             <?php }
             if (!empty($tags)) {

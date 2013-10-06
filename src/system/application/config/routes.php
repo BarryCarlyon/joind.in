@@ -1,4 +1,4 @@
-<?php  
+<?php
 /**
  * Joindin config file
  *
@@ -67,6 +67,8 @@ $route['event/export/(:num)']  = 'event/export/$1';
 $route['event/edit/(:num)']    = 'event/edit/$1';
 $route['event/view/(:num)']    = 'event/view/$1';
 $route['event/view/(:num)']    = 'event/view/$1';
+
+$route['event/widget/(:num)']    = 'event/widget/$1';
 
 $tabs = array(
     'talks',
