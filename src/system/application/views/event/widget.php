@@ -1,34 +1,97 @@
+<?php
+
+$autofire = false;
+if ($user_id) {
+//    $autofire = true;
+}
+
+//<h3><?php echo $user_id; ? ></h3>
+?>
+
 <a href="" id="woo">eeeeee</a>
+<pre id="pre"></pre>
 
 <script type="text/javascript">
+var autofire = false;
 jQuery(document).ready(function() {
     jQuery('#woo').click(function(e) {
         e.preventDefault();
 //        markAttending(this, 1, false);
-        markAttendingB(this, 1);
+        markAttendingB(this, <?php echo $event_id; ?>);
     });
+    <?php
+        if ($autofire) {
+            ?>
+autofire = true;
+jQuery('#woo').trigger('click');
+            <?php
+        }
+    ?>
 });
 
 function markAttendingB(el, eid) {
-    console.log('b ' + eid);
-    window.open('/event/widget/pending/', 'joind_api_login', 'height=200,width=400,location=1');
+//    console.log('b ' + eid);
+//    window.open('/event/widget/pending/', 'joind_api_login', 'height=200,width=400');//,location=1');
+    if (!autofire) {
+//        window.open('/event/widget/pending/', 'joind_api_login', 'height=200,width=400,location=1');
+    }
     jQuery.ajax({
         type: 'POST',
         url: 'http://api.joind.local/v2.1/events/' + eid + '/attending/',
-        contentType: 'application/json',
+//        contentType: 'application/json',
 
         dataType: 'jsonp',
         crossDomain: true,
 
+//        headers: {
+//            "Authorization":"OAuth <?php echo $oauth; ?>",
+//            "Content-Type":"application/json"
+//        },
+
+        beforeSend: function(xhrObj){
+            xhrObj.setRequestHeader("Content-Type","application/json");
+            xhrObj.setRequestHeader("Accept","application/json");
+            xhrObj.setRequestHeader("Authorization","OAuth <?php echo $oauth; ?>");
+//            xhrObj.setRequestHeader("Authorization","OAuth <?php echo $oauth; ?>");
+        },
+
         success: function(rdata) {
-            console.log(rdata);
+            alert('yay');
+//            alert('fox');
+//            console.log('woo');
 //            window.close('joind_api_login');
         }, error: function (xhr) {
+            alert('fail');
 //            window.close('joind_api_login');
-//            console.log(xhr);
+            console.log(xhr);
+            jQuery('#pre').html(xhr.responseText);
 //            console.log(xhr.responseText);
             // pop a dialog to login
-            window.open('/event/widget/login/', 'joind_api_login', 'height=200,width=400');
+            var packet = {
+                "eid": eid,
+                "task": "attending"
+            };
+            packet = JSON.stringify(packet);
+
+//            window.open('/event/widget/login/', 'joind_api_login', 'height=200,width=400');
+//            window.open('/user/widget_login/', 'joind_api_login', 'height=200,width=400');
+return;
+            if (!autofire) {
+                window.open('/user/oauth_widget_allow'
+                    + '?api_key=37fd13205d81994000c603308201d1'
+                    + '&callback=/event/widget/return/'
+                    + '&state=' + packet,
+                    'joind_api_login', 'height=200,width=400');
+            }
+        }, complete: function(xhr) {
+            //http://stackoverflow.com/questions/2233553/data-inserted-successful-but-jquery-still-returning-error
+             if (xhr.readyState == 4) {
+                if (xhr.status == 201) {
+                    alert('201');
+                } else {
+                    alert(xhr.status);
+                }
+             }
         }
     });
 }

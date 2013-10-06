@@ -92,7 +92,7 @@ class User extends AuthAbstract
         if ($this->validation->run() == false) {
             // add a for-one-request-only session field
             if ($this->session->flashdata('url_after_login')) {
-                // the form submission failed, set the flashdata again so 
+                // the form submission failed, set the flashdata again so
                 // it's there for the resubmit
                 $this->session
                     ->set_flashdata(
@@ -114,6 +114,64 @@ class User extends AuthAbstract
             $this->_login($ret[0]);
         }
     }
+
+    /*
+    function widget_login() {
+//        $this->template->set_template('widget');
+//        $this->login();
+
+        $this->load->helper('form');
+        $this->load->helper('url');
+        $this->load->library('validation');
+        $this->load->model('user_model');
+        $this->load->library('SSL');
+        $arr = array();
+
+        // Used when someone forgot their password.
+        // Cleans up the flow some.
+        $arr['msg'] = $this->session->flashdata('forgot_password_reset');
+
+        $this->ssl->sslRoute();
+
+        $fields = array(
+            'user' => 'Username',
+            'pass' => 'Password'
+        );
+        $rules  = array(
+            'user' => 'required',
+            'pass' => 'required|callback_start_up_check'
+        );
+        $this->validation->set_rules($rules);
+        $this->validation->set_fields($fields);
+
+        $this->template->set_template('widget');
+
+        if ($this->validation->run() == false) {
+            // add a for-one-request-only session field
+            if ($this->session->flashdata('url_after_login')) {
+                // the form submission failed, set the flashdata again so
+                // it's there for the resubmit
+                $this->session
+                    ->set_flashdata(
+                        'url_after_login',
+                        $this->session->flashdata('url_after_login')
+                    );
+            } else {
+                $this->session->set_flashdata(
+                    'url_after_login',
+                    $this->input->server('HTTP_REFERER')
+                );
+            }
+
+            $this->template->write_view('content', 'user/widget_login', $arr);
+            $this->template->render();
+        } else {
+            // success! get our data and update our login time
+            $ret = $this->user_model->getUserByUsername($this->input->post('user'));
+            $this->_login($ret[0]);
+        }
+    }
+    */
 
     /**
      * Logs the current user out and destroys the session.
@@ -174,10 +232,10 @@ class User extends AuthAbstract
         // ID and Request code are given?
         if ($id != null and $request_code != null) {
             $ret = $this->user_model->getUserById($id);
-            if (empty($ret) 
+            if (empty($ret)
                 || strcasecmp($ret[0]->request_code, $request_code)
             ) {
-                // Could not find the user. Maybe already used, maybe a 
+                // Could not find the user. Maybe already used, maybe a
                 // false code
                 $arr['msg'] = "The request code is already used or is invalid.";
             } else {
@@ -542,7 +600,7 @@ class User extends AuthAbstract
      *
      * View users listing, enable/disable, etc.
      *
-     * @param string  $start  Determine if we are selecting another 
+     * @param string  $start  Determine if we are selecting another
      *                        page of results
      * @param integer $offset Starting index of records to display
      *
@@ -599,7 +657,7 @@ class User extends AuthAbstract
         // Save back to session
         $this->session->set_userdata('user-admin-offset', $offset);
         $this->session->set_userdata('user-admin-users_per_page', $users_per_page);
-        
+
         $this->validation->users_per_page = $users_per_page;
 
         // Retreive this page's list of users along with total count of users
@@ -818,6 +876,11 @@ class User extends AuthAbstract
         return true;
     }
 
+    function oauth_widget_allow()
+    {
+        $this->template->set_template('widget');
+        $this->oauth_allow();
+    }
     /**
      * Allow users to grant or deny access for an oauth app
      *
@@ -933,7 +996,7 @@ class User extends AuthAbstract
 
     /**
      * Show this user's API keys, generating them if they don't exist
-     * 
+     *
      * @access public
      * @return void
      */
@@ -978,22 +1041,22 @@ class User extends AuthAbstract
         }
 
         // fetch all keys
-        $view_data['keys'] 
+        $view_data['keys']
             = $this->user_admin_model->oauthGetConsumerKeysByUser(
                 $this->session->userdata('ID')
             );
-        $view_data['grants'] 
+        $view_data['grants']
             = $this->user_admin_model->oauthGetAccessKeysByUser(
                 $this->session->userdata('ID')
             );
-        
+
         $this->template->write_view('content', 'user/apikey', $view_data);
         $this->template->render();
     }
 
     /**
      * Remove the API key record for this user
-     * 
+     *
      * @return void
      */
     public function apikey_delete()
@@ -1014,10 +1077,10 @@ class User extends AuthAbstract
 
     /**
      * Remove this application authorisation for this user
-     * 
+     *
      * @return void
      */
-    public function revoke_access() 
+    public function revoke_access()
     {
         if (!$this->user_model->isAuth()) {
             redirect('user/login', 'refresh');

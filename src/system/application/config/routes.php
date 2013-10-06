@@ -68,7 +68,9 @@ $route['event/edit/(:num)']    = 'event/edit/$1';
 $route['event/view/(:num)']    = 'event/view/$1';
 $route['event/view/(:num)']    = 'event/view/$1';
 
-$route['event/widget/(:num)']    = 'event/widget/$1';
+$route['event/widget/(:num)']  = 'event/widget/$1';
+//$route['event/widget/login']  = 'user/widget_login/';
+$route['event/widget/return'] = 'event/widget_return/';
 
 $tabs = array(
     'talks',

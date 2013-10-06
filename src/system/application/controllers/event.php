@@ -753,6 +753,7 @@ barry
         $events     = $this->event_model->getEventDetail($id);
         $evt_admins = $this->event_model->getEventAdmins($id);
 
+        $is_auth    = $this->user_model->isAuth();
         if ($is_auth) {
             $uid        = $this->session->userdata('ID');
             $chk_attend = ($this->uam->chkAttend($uid, $id)) ? true : false;
@@ -765,22 +766,31 @@ barry
 
 //        $attend        = $this->uam->getAttendUsers($id);
 
-        $my_id = $this->session->userdata('ID');
+//        $my_id = $this->session->userdata('ID');
 //        $logged_in_is_attending = isset($atten)
 //        print_r($attend);exit;
 
+        $oauth = $this->session->flashdata('oauth_access_code');
+        if (!$oauth) {
+            $oauth = $this->input->get('access_token');
+        }
+
         $arr = array(
-            'event_detail'         => $events[0],
-            'admin'                => ($this->user_model->isAdminEvent($id))
-                ? true : false,
+            'event_id' => $id,
+//            'event_detail'         => $events[0],
+//            'admin'                => ($this->user_model->isAdminEvent($id))
+//                ? true : false,
             'user_id'              => ($is_auth)
                 ? $this->session->userdata('ID') : '0',
             'attend'               => $chk_attend,
+
+            'oauth' => $oauth,
 //            'attend_ct'            => count($attend),
-            'reqkey'               => $reqkey,
-            'seckey'               => buildSecFile($reqkey),
+//            'reqkey'               => $reqkey,
+//            'seckey'               => buildSecFile($reqkey),
 //            'attending'            => $attend,
         );
+//        print_r($arr);exit;
 
 //        $this->load->view('template_widget');
 
@@ -792,6 +802,35 @@ barry
 
         $this->template->render();
     }
+    function widget_return() {
+        // async process the response
+        $state = $this->input->get('state');
+        $arr = json_decode($state, true);
+//        print_r($arr);
+
+        $my_id = $this->session->userdata('ID');
+        if (!$my_id) {
+            echo 'no user id';
+            exit;
+        }
+//exit;http://joind.local/event/widget/return/?access_token=a12b797e8e249528&state=%7B%22eid%22:1,%22task%22:%22attending%22%7D
+//        falsh data
+        $this->session->set_flashdata("oauth_access_code", $this->input->get('access_token'));
+
+        $this->widget($arr['eid']);
+
+        return;
+
+        $this->template->set_template('widget');
+
+        $this->template->write_view('content', 'event/widget', $arr, true);
+
+        $this->template->render();
+//        print_r($state);exit;
+    }
+/**
+en barry
+*/
 
     /**
      * Displays a detailed overview of a specific event.

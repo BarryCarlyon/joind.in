@@ -48,7 +48,6 @@ if ($event_detail->event_cfp_start>=time()) {
                 if its set, but the event is in the future, show a link for "I'll be there!"
                 if its not set show the "I'll be there/I was there" based on time
                 */
-                print_r($attend);exit;
                 if ($attend && user_is_auth()) {
                     if ($event_detail->event_end<time()) {
                         $link_txt="I attended"; $showt=1;
