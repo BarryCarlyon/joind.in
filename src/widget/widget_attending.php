@@ -19,6 +19,10 @@ joindin_attending.urlBase_api     = "<?php echo $apiBase; ?>";
 
 joindin_attending.embedStyle      = true;
 
+// data collectors
+joindin_attending.eventId     = null;
+joindin_attending.attending   = false;
+
 joindin_attending.draw = function(eventId, node) {
     if (!node) {
         var rndm = parseInt(Math.random() * 9999999);
@@ -34,11 +38,41 @@ joindin_attending.draw = function(eventId, node) {
             return;
         }
     }
+    joindin_attending.eventId = eventId;
+
+    // finished init
+
+    joindin_attending.renderWidget(node);
+
+    return;
+    // grab some data
+    jQuery.ajax({
+        url: joindin_speaker.urlBase_api + 'v2.1/users/' + userId + '/talks?format=json',
+        dataType: 'jsonp',
+        success: function(json){
+            joindin_attending.gotData(json, node, eventId);
+        }
+    });
+}
+
+joindin_attending.gotData = function(json, node, $eventId) {
+
+}
+joindin_attending.renderWidget = function(node) {
+    var content = "";
+
+    content += "<div class='joindin-content-insert'>";
+
+    content += '<div class="joindin-content-insert-past">';
+    content += 'woo';
+    content += '</div>';
+
+    jQuery(node).append(content);
 }
 <?php
 exit;
 
-//
+//.
 ?>
 function apiRequest(rtype,raction,data,callback){
     var xml_str='';
